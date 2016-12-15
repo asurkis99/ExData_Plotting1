@@ -1,0 +1,14 @@
+hpcDatNames <- read.table("household_power_consumption.txt", sep=";",na.strings=c("?"),nrows=1,header=TRUE)
+hpcDat <- read.table("household_power_consumption.txt", header=FALSE, sep=";",na.strings=c("?"),skip=grep("1/2/2007", readLines("household_power_consumption.txt")),nrows=60*24*2-1)
+names(hpcDat) = names(hpcDatNames)
+
+hpcDat$Date <- as.Date(hpcDat$Date, "%d/%m/%Y")
+hpcDat$DateTime <- paste(hpcDat$Date, hpcDat$Time)
+hpcDat$DateTimeNum <- strptime(hpcDat$DateTime, "%Y-%m-%d %H:%M:%S")
+
+png("plot3.png", width = 480, height = 480, units = "px")
+with(hpcDat, plot(DateTimeNum, Sub_metering_1, type = "l",col="black",ylab="Energy sub metering",xlab=""))
+with(hpcDat, points(DateTimeNum, Sub_metering_2, type="l", col="red"))
+with(hpcDat, points(DateTimeNum, Sub_metering_3, type="l", col="blue"))
+legend("topright", names(hpcDat[7:9]),lty=1,col=c("black","red","blue"))
+dev.off()
